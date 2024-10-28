@@ -13,26 +13,31 @@ class GameBoard {
     }
 
     addShip(cords, length, vertical = false) {
-        if (!vertical && cords[0] + length > 9) return false;
-        if (vertical && cords[1] + length > 9) return false;
-
+        if (cords[0] + length > 9) return false;
+        if (cords[1] + length > 9) return false;
         const ship = new Ship(length);
 
         if (vertical) {
             for (let i = 0; i < length; i++) {
-                this.board[cords[0]][cords[1]+i].push(ship);
+                if (this.board[cords[0]+i][cords[1]][0]) return false;
+            }
+            for (let i = 0; i < length; i++) {
+                this.board[cords[0]+i][cords[1]].push(ship);
             }
             return true;
         }
-
         for (let i = 0; i < length; i++) {
-            this.board[cords[0]+i][cords[1]].push(ship);
+            if (this.board[cords[0]][cords[1]+i][0]) return false;
+        }
+        for (let i = 0; i < length; i++) {
+            this.board[cords[0]][cords[1]+i].push(ship);
         }
         return true;
     }
 
     receiveAttack(cords) {
         const cell = this.board[cords[0]][cords[1]];
+        if (cell[1]) return false;
         if (cell[0] instanceof Ship) {
             if (cell[1] !== 'hit') cell[0].hit();
             cell[1] = 'hit';
